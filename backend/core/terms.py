@@ -5,54 +5,42 @@ Two-pass system:
            wordninja language model frequency.
   Pass 2: Reclassify tokens using parent/sibling context into business,
            operations, or language categories.
+
+Term sets are loaded from core/config/terms.json and can be customized
+per deployment without modifying code.
 """
+
+import json
+from pathlib import Path
 
 import wordninja
 
+_CONFIG_PATH = Path(__file__).parent / "config" / "terms.json"
 
-DOMAIN_TERMS = {"gss", "gpa", "immuta", "transact", "uuid", "crm", "hie", "eoi", "ppl", "classifier"}
 
-BUSINESS_TERMS = {
-    "gss", "gpa", "immuta", "transact", "crm", "hie", "eoi", "ppl",
-    "classifier", "galleri", "commercial", "artemis", "clinical",
-    "oncology", "genomic", "assay", "biomarker", "cohort", "specimen",
-    "analyte", "variant", "pipeline", "flowcell", "sequencing",
-    "illumina", "cfna", "methylation", "grail",
-}
+def _load_config():
+    with open(_CONFIG_PATH) as f:
+        return json.load(f)
 
-OPERATIONS_TERMS = {
-    "created", "modified", "updated", "deleted", "archived",
-    "version", "count", "total", "sum", "avg", "average",
-    "timestamp", "status", "source", "owner", "author",
-    "enabled", "disabled", "active", "inactive", "valid", "invalid",
-    "start", "stop", "begin", "finish",
-    "sync", "async", "batch", "queue", "job", "task", "worker",
-    "error", "warning", "success", "failed", "pending", "completed",
-    "retry", "attempt", "timeout", "duration", "elapsed",
-    "config", "setting", "param", "option", "default",
-    "index", "offset", "limit", "page", "size", "length",
-    "hash", "token", "session", "request", "response",
-    "insert", "update", "delete", "select", "merge", "upsert",
-    "load", "extract", "transform", "etl", "ingestion",
-}
 
-KNOWN_COMPOUNDS = {
-    "signoff", "signup", "signin", "logout", "login",
-    "datetime", "timestamp", "dataset", "workflow", "lookup",
-    "dropdown", "checkbox", "frontend", "backend", "endpoint",
-    "username", "filename", "metadata", "namespace", "lifecycle",
-    "rollback", "rollup", "cleanup", "timeout", "callback",
-    "upstream", "downstream", "inbound", "outbound",
-    "healthcare", "workflow", "dataflow", "pipeline",
-}
+_config = _load_config()
 
-GENERIC_STOPWORDS = {
-    "a", "an", "at", "by", "for", "in", "is", "it", "of", "on", "or", "to",
-    "the", "and", "not", "no", "be", "do", "id", "type", "name", "key",
-    "has", "had", "was", "are", "but", "if", "so", "as", "up", "out",
-    "date", "time", "num", "flag", "code", "col", "row", "val", "tmp",
-    "new", "old", "all", "set", "get", "max", "min", "end", "log",
-}
+DOMAIN_TERMS = set(_config.get("domain_terms", []))
+BUSINESS_TERMS = set(_config.get("business_terms", []))
+OPERATIONS_TERMS = set(_config.get("operations_terms", []))
+KNOWN_COMPOUNDS = set(_config.get("known_compounds", []))
+GENERIC_STOPWORDS = set(_config.get("generic_stopwords", []))
+
+
+def reload_config():
+    """Reload term sets from the JSON config file."""
+    global DOMAIN_TERMS, BUSINESS_TERMS, OPERATIONS_TERMS, KNOWN_COMPOUNDS, GENERIC_STOPWORDS
+    cfg = _load_config()
+    DOMAIN_TERMS = set(cfg.get("domain_terms", []))
+    BUSINESS_TERMS = set(cfg.get("business_terms", []))
+    OPERATIONS_TERMS = set(cfg.get("operations_terms", []))
+    KNOWN_COMPOUNDS = set(cfg.get("known_compounds", []))
+    GENERIC_STOPWORDS = set(cfg.get("generic_stopwords", []))
 
 
 def segment_name(name: str) -> list[str]:

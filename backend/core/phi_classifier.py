@@ -6,49 +6,40 @@ Provides pattern sets and scoring functions for a 5-pass classification pipeline
   Pass 3: Child-to-parent boosting
   Pass 4: Sibling-to-sibling boosting
   Pass 5: Score normalization and propagation
+
+Pattern sets are loaded from core/config/phi_classifier.json and can be
+customized per deployment without modifying code.
 """
+
+import json
+from pathlib import Path
 
 from core.terms import segment_name, GENERIC_STOPWORDS
 
+_CONFIG_PATH = Path(__file__).parent / "config" / "phi_classifier.json"
 
-PHI_PATTERNS = {
-    "patient", "diagnosis", "icd", "cpt", "mrn", "specimen",
-    "clinical", "pathology", "genomic", "variant", "tumor",
-    "treatment", "medication", "prescription", "lab", "result",
-    "provider", "physician", "hospital", "encounter", "admission",
-    "discharge", "prognosis", "symptom", "condition", "procedure",
-    "surgery", "therapy", "dosage", "allergy", "immunization",
-    "radiology", "imaging", "biopsy", "histology", "cytology",
-    "hemoglobin", "glucose", "cholesterol", "blood", "plasma",
-    "serum", "urine", "vital", "pulse", "heartrate", "oxygen",
-    "insurance", "beneficiary", "claim", "copay", "deductible",
-}
 
-PII_PATTERNS = {
-    "email", "ssn", "phone", "mobile", "address", "street",
-    "city", "zip", "postal", "dob", "birth", "age", "gender",
-    "firstname", "lastname", "fullname", "username", "password",
-    "account", "card", "bank", "routing", "license", "passport",
-    "national", "social", "security", "driver", "taxpayer",
-    "salary", "income", "wage", "compensation", "payroll",
-    "ethnicity", "race", "religion", "marital", "spouse",
-    "dependent", "guardian", "emergency", "contact",
-}
+def _load_config():
+    with open(_CONFIG_PATH) as f:
+        return json.load(f)
 
-PHI_TERM_BOOSTERS = {
-    "patient": 20, "clinical": 18, "specimen": 20, "genomic": 15,
-    "variant": 12, "tumor": 18, "diagnosis": 20, "treatment": 15,
-    "medication": 15, "pathology": 18, "lab": 10, "assay": 12,
-    "biomarker": 15, "methylation": 12, "sequencing": 10,
-    "oncology": 18, "classifier": 8, "flowcell": 8,
-}
 
-PII_TERM_BOOSTERS = {
-    "email": 25, "phone": 20, "address": 20, "account": 12,
-    "billing": 15, "payment": 15, "card": 18, "bank": 18,
-    "username": 15, "password": 25, "login": 10, "birth": 20,
-    "name": 15, "contact": 12, "salary": 18, "income": 15,
-}
+_config = _load_config()
+
+PHI_PATTERNS = set(_config.get("phi_patterns", []))
+PII_PATTERNS = set(_config.get("pii_patterns", []))
+PHI_TERM_BOOSTERS = _config.get("phi_term_boosters", {})
+PII_TERM_BOOSTERS = _config.get("pii_term_boosters", {})
+
+
+def reload_config():
+    """Reload pattern sets from the JSON config file."""
+    global PHI_PATTERNS, PII_PATTERNS, PHI_TERM_BOOSTERS, PII_TERM_BOOSTERS
+    cfg = _load_config()
+    PHI_PATTERNS = set(cfg.get("phi_patterns", []))
+    PII_PATTERNS = set(cfg.get("pii_patterns", []))
+    PHI_TERM_BOOSTERS = cfg.get("phi_term_boosters", {})
+    PII_TERM_BOOSTERS = cfg.get("pii_term_boosters", {})
 
 
 def score_by_name(entity_name: str) -> tuple[int, int]:

@@ -1,0 +1,39 @@
+{
+  "domain_terms": [
+    "uuid", "crm", "hie", "eoi", "ppl", "classifier", "transact"
+  ],
+  "business_terms": [
+    "commercial", "classifier", "pipeline", "cohort"
+  ],
+  "operations_terms": [
+    "created", "modified", "updated", "deleted", "archived",
+    "version", "count", "total", "sum", "avg", "average",
+    "timestamp", "status", "source", "owner", "author",
+    "enabled", "disabled", "active", "inactive", "valid", "invalid",
+    "start", "stop", "begin", "finish",
+    "sync", "async", "batch", "queue", "job", "task", "worker",
+    "error", "warning", "success", "failed", "pending", "completed",
+    "retry", "attempt", "timeout", "duration", "elapsed",
+    "config", "setting", "param", "option", "default",
+    "index", "offset", "limit", "page", "size", "length",
+    "hash", "token", "session", "request", "response",
+    "insert", "update", "delete", "select", "merge", "upsert",
+    "load", "extract", "transform", "etl", "ingestion"
+  ],
+  "known_compounds": [
+    "signoff", "signup", "signin", "logout", "login",
+    "datetime", "timestamp", "dataset", "workflow", "lookup",
+    "dropdown", "checkbox", "frontend", "backend", "endpoint",
+    "username", "filename", "metadata", "namespace", "lifecycle",
+    "rollback", "rollup", "cleanup", "timeout", "callback",
+    "upstream", "downstream", "inbound", "outbound",
+    "healthcare", "workflow", "dataflow", "pipeline"
+  ],
+  "generic_stopwords": [
+    "a", "an", "at", "by", "for", "in", "is", "it", "of", "on", "or", "to",
+    "the", "and", "not", "no", "be", "do", "id", "type", "name", "key",
+    "has", "had", "was", "are", "but", "if", "so", "as", "up", "out",
+    "date", "time", "num", "flag", "code", "col", "row", "val", "tmp",
+    "new", "old", "all", "set", "get", "max", "min", "end", "log"
+  ]
+}
