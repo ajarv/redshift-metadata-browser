@@ -1,0 +1,13 @@
+[project]
+name = "db-jango"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1",
+    "djangorestframework>=3.15",
+    "django-cors-headers>=4.4",
+    "wordninja>=2.0",
+]
+
+[project.scripts]
+manage = "config.manage:main"
