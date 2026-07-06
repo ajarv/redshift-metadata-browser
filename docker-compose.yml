@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.db-jango:/root/.db-jango
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-yerk8xke-894f-msaj.3sul}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-0}
+      - PGHOST=${PGHOST:-}
+      - PGPORT=${PGPORT:-5439}
+      - PGDATABASE=${PGDATABASE:-}
+      - PGUSER=${PGUSER:-}
+      - PGPASSWORD=${PGPASSWORD:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/schemas/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend

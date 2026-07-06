@@ -191,7 +191,8 @@ def task_list(request):
         tasks = TaskStatus.objects.all()[:20]
         serializer = TaskStatusSerializer(tasks, many=True)
         available_tasks = [
-            {"name": "fetch_schema", "description": "Fetch Redshift schema metadata"},
+            {"name": "refresh_schemas", "description": "Refresh schema list from Redshift (lightweight)"},
+            {"name": "fetch_schema", "description": "Fetch full Redshift metadata (schemas + tables + columns)"},
             {"name": "compute_terms", "description": "Compute terms for entities"},
             {"name": "classify_phi", "description": "Classify entities for PHI/PII"},
         ]

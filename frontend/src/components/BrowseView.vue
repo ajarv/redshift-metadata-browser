@@ -3,10 +3,21 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <h3>Schemas</h3>
+        <div class="tree-filter">
+          <span class="material-icons filter-icon">filter_list</span>
+          <input
+            type="text"
+            placeholder="Filter..."
+            v-model="treeFilter"
+            class="filter-input">
+          <button v-if="treeFilter" class="filter-clear" @click="treeFilter = ''">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
       </div>
       <div class="tree-container">
         <div v-if="loading" class="loading">Loading schemas...</div>
-        <div v-for="node in treeNodes" :key="node.fqn" class="tree-node">
+        <div v-for="node in filteredTreeNodes" :key="node.fqn" class="tree-node">
           <div
             class="tree-item schema-item"
             :class="{ selected: selectedFqn === node.fqn }"
@@ -19,7 +30,7 @@
           </div>
           <div v-if="node.expanded">
             <div v-if="node.loading" class="tree-child loading-child">Loading...</div>
-            <div v-for="child in node.children" :key="child.fqn" class="tree-child">
+            <div v-for="child in filteredChildren(node)" :key="child.fqn" class="tree-child">
               <div
                 class="tree-item child-item"
                 :class="{ selected: selectedFqn === child.fqn }"
@@ -88,11 +99,29 @@ const loading = ref(true)
 const selectedFqn = ref(null)
 const selectedEntity = ref(null)
 const detailEntity = ref(null)
+const treeFilter = ref('')
 
 const columns = ref([])
 const columnsLoading = ref(false)
 const columnsCollapsed = ref(false)
 const selectedColumnFqn = ref(null)
+
+const filteredTreeNodes = computed(() => {
+  const q = treeFilter.value.toLowerCase().trim()
+  if (!q) return treeNodes.value
+  return treeNodes.value.filter(node => {
+    if (node.name.toLowerCase().includes(q)) return true
+    if (node.children && node.children.some(c => c.name.toLowerCase().includes(q))) return true
+    return false
+  })
+})
+
+function filteredChildren(node) {
+  const q = treeFilter.value.toLowerCase().trim()
+  if (!q) return node.children
+  if (node.name.toLowerCase().includes(q)) return node.children
+  return node.children.filter(c => c.name.toLowerCase().includes(q))
+}
 
 const showColumnsPanel = computed(() => {
   return selectedEntity.value &&
@@ -234,6 +263,23 @@ async function loadEntityByFqn(fqn) {
   font-size: 14px; font-weight: 600; color: var(--text-secondary);
   text-transform: uppercase; letter-spacing: 0.5px;
 }
+.tree-filter {
+  display: flex; align-items: center; margin-top: 10px;
+  background: var(--background); border-radius: 6px;
+  padding: 4px 8px; gap: 6px;
+}
+.filter-icon { font-size: 16px; color: var(--text-secondary); }
+.filter-input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 12px; color: var(--text-primary); min-width: 0;
+}
+.filter-input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+.filter-clear {
+  background: none; border: none; padding: 0; display: flex;
+  align-items: center; cursor: pointer; color: var(--text-secondary);
+}
+.filter-clear .material-icons { font-size: 14px; }
+.filter-clear:hover { color: var(--text-primary); }
 .tree-container { flex: 1; overflow-y: auto; padding: 8px; }
 .tree-item {
   display: flex; align-items: center; gap: 4px; padding: 6px 8px;

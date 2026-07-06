@@ -104,7 +104,7 @@ class TaskStatusSerializer(serializers.ModelSerializer):
 
 
 class TaskRunSerializer(serializers.Serializer):
-    task_name = serializers.ChoiceField(choices=["fetch_schema", "compute_terms", "classify_phi"])
+    task_name = serializers.ChoiceField(choices=["fetch_schema", "refresh_schemas", "compute_terms", "classify_phi"])
     schema = serializers.CharField(required=False, allow_blank=True, default="")
     recompute = serializers.BooleanField(required=False, default=False)
     workers = serializers.IntegerField(required=False, default=4, min_value=1, max_value=16)
