@@ -50,9 +50,11 @@ class Command(BaseCommand):
         try:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT schema_name FROM information_schema.schemata "
-                    "WHERE schema_name NOT IN ('information_schema', 'pg_catalog', 'pg_internal') "
-                    "ORDER BY schema_name"
+                    "SELECT nspname FROM pg_namespace "
+                    "WHERE nspname NOT IN ('information_schema', 'pg_catalog', 'pg_internal') "
+                    "AND nspname NOT LIKE 'pg_temp_%%' "
+                    "AND nspname NOT LIKE 'pg_toast_%%' "
+                    "ORDER BY nspname"
                 )
                 all_schemas = [row[0] for row in cur.fetchall()]
         finally:
