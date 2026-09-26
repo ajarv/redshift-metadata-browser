@@ -1,4 +1,4 @@
-# DB-Jango — Database Metadata Browser
+# Redshift Metadata Browser
 
 A multiuser web application for browsing, searching, tagging, and classifying database schema metadata. Built with Django REST Framework (backend) and Vue 3 + Vite (frontend), backed by SQLite.
 
